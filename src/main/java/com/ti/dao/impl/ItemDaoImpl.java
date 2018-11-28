@@ -1,10 +1,12 @@
 package com.ti.dao.impl;
 
+import com.ti.annotation.BeanScan;
 import com.ti.dao.ItemDao;
 import com.ti.entities.Item;
 
 import java.util.ArrayList;
 
+@BeanScan
 public class ItemDaoImpl extends BaseDaoImpl<Item> implements ItemDao {
 
     public ArrayList<Item> findAllItem() {

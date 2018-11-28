@@ -29,7 +29,7 @@ public class ApplicationStarter {
     }
 
     public static void main(String[] args) {
-        ItemDao itemDao = new ItemDaoImpl();
+        ItemDao itemDao = (ItemDao) BeanFactory.get("ItemDaoImpl");
         Scanner in = new Scanner(System.in);
         out:
         while (true) {
