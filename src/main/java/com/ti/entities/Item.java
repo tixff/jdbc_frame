@@ -1,47 +1,11 @@
 package com.ti.entities;
 
-import java.lang.reflect.Field;
 
-public class Item {
+public class Item extends BaseBean<Item> {
     private Integer id;
     private String name;
     private Double price;
     private Integer count;
-
-    public Item() {
-    }
-
-    public Item(Integer id, String name, Double price, Integer count) {
-        this.id = id;
-        this.name = name;
-        this.price = price;
-        this.count = count;
-    }
-
-    public static void main(String[] args) {
-        Item item = new Item(1, "book", 122d, 34);
-        Field[] fields = item.getClass().getDeclaredFields();
-        for (int i = 0; i < fields.length; i++) {
-            Field field = fields[i];
-            try {
-                Class<?> type = field.getType();
-                if (type == Integer.class) {
-                    Integer intnum = (Integer) field.get(item);
-                    System.out.println(intnum);
-                }
-                if (type == String.class) {
-                    String str = (String) field.get(item);
-                    System.out.println(str);
-                }
-                if (type == Double.class) {
-                    Double aDouble = (Double) field.get(item);
-                    System.out.println(aDouble);
-                }
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
     public Integer getId() {
         return id;

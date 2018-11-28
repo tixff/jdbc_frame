@@ -8,7 +8,7 @@ public interface ItemDao {
 
     ArrayList<Item> findAllItem();
 
-    ArrayList<Item>  findIem(Item item);
+    ArrayList<Item>  findItem(Item item);
 
     void updateItem(Item item);
 

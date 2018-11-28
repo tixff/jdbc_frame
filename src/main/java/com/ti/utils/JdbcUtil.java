@@ -2,6 +2,7 @@ package com.ti.utils;
 
 
 import com.ti.ApplicationStarter;
+import com.ti.BeanFactory;
 import com.ti.entities.Item;
 
 import java.io.IOException;
@@ -102,12 +103,15 @@ public class JdbcUtil {
      * @return
      */
     public static ArrayList select(String sql, Class resultType) {
+        String className = resultType.getName();
+        className = className.substring(className.lastIndexOf(".") + 1, className.length()) + "Mapper";
         Connection conn = null;
         Statement statement = null;
         try {
             conn = getConnection();
             ArrayList<Object> list = new ArrayList<>();
-            HashMap<String, String> map = loadMapper(resultType);
+            HashMap<String, Properties> props = BeanFactory.getProps();
+            Properties mapper = props.get(className);
 
             statement = conn.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);
@@ -116,9 +120,12 @@ public class JdbcUtil {
             }
             while (resultSet.next()) {
                 Item item = new Item();
-                for (String column : map.keySet()) {
-                    String field = map.get(column);
-                    String value = resultSet.getString(column);
+                for (Object column : mapper.keySet()) {
+                    String field = (String) mapper.get(column);
+                    if ("table".equals(column)) {
+                        continue;
+                    }
+                    String value = resultSet.getString((String) column);
                     if (value == null) {
                         continue;
                     }

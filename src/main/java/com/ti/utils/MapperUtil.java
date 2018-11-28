@@ -1,9 +1,12 @@
 package com.ti.utils;
 
+import com.ti.BeanFactory;
+import com.ti.entities.Item;
 import com.ti.enums.SqlCondition;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.Properties;
 
 public class MapperUtil {
 
@@ -21,6 +24,9 @@ public class MapperUtil {
         for (int i = 0; i < fields.length; i++) {
             Field field = fields[i];
             String name = field.getName();
+            if ("table".equals(name)) {
+                continue;
+            }
             for (String column : map.keySet()) {
                 if (map.get(column).equals(name)) {
                     String methodName = "get" + StringUtil.toUpperFirstChar(name);
@@ -106,10 +112,14 @@ public class MapperUtil {
 
         for (int i = 0; i < fields.length; i++) {
             Field field = fields[i];
+            String name = field.getName();
+            if ("table".equals(name)) {
+                continue;
+            }
             try {
                 Class<?> type = field.getType();
                 if (type == Integer.class) {
-                    String name = field.getName();
+
                     String methodName = "get" + StringUtil.toUpperFirstChar(name);
                     Integer value = (Integer) obj.getClass().getMethod(methodName).invoke(obj);
                     if (value == null) {
@@ -119,7 +129,6 @@ public class MapperUtil {
                     continue;
                 }
                 if (type == String.class) {
-                    String name = field.getName();
                     String methodName = "get" + StringUtil.toUpperFirstChar(name);
                     String value = (String) obj.getClass().getMethod(methodName).invoke(obj);
                     if (value == null) {
@@ -129,7 +138,6 @@ public class MapperUtil {
                     continue;
                 }
                 if (type == Double.class) {
-                    String name = field.getName();
                     String methodName = "get" + StringUtil.toUpperFirstChar(name);
                     Double value = (Double) obj.getClass().getMethod(methodName).invoke(obj);
                     if (value == null) {
@@ -149,4 +157,11 @@ public class MapperUtil {
         return sb.toString();
     }
 
+    public static String initTable(Class c) {
+        HashMap<String, Properties> props = BeanFactory.getProps();
+        String name = c.getName();
+        name = name.substring(name.lastIndexOf(".") + 1, name.length());
+        Properties properties = props.get(name + "Mapper");
+        return (String) properties.get("table");
+    }
 }

@@ -2,75 +2,28 @@ package com.ti.dao.impl;
 
 import com.ti.dao.ItemDao;
 import com.ti.entities.Item;
-import com.ti.enums.SqlCondition;
-import com.ti.utils.JdbcUtil;
-import com.ti.utils.MapperUtil;
 
 import java.util.ArrayList;
 
-public class ItemDaoImpl implements ItemDao {
+public class ItemDaoImpl extends BaseDaoImpl<Item> implements ItemDao {
 
     public ArrayList<Item> findAllItem() {
-        String sql = "select *from item";
-        ArrayList list = JdbcUtil.select(sql, Item.class);
-        return list;
+        return finaAll(new Item(), new Item().getTable());
     }
 
-    public ArrayList<Item> findIem(Item item) {
-        if (item == null) {
-            return null;
-        }
-        StringBuffer sb = new StringBuffer();
-        sb.append("select * from item where");
-        String sql = MapperUtil.commonCondition(sb, item, SqlCondition.ADD);
-        if (sql == null) {
-            return null;
-        }
-        ArrayList list = JdbcUtil.select(sql, Item.class);
-        return list;
+    public ArrayList<Item> findItem(Item item) {
+        return find(item, item.getTable());
     }
 
     public void updateItem(Item item) {
-        if (item == null || item.getId() == null) {
-            return;
-        }
-        StringBuffer sb = new StringBuffer();
-        sb.append("update item set ");
-        String sql = MapperUtil.commonCondition(sb, item, SqlCondition.VALUES);
-        if (sql == null) {
-            return;
-        }
-        sb.append("where id=" + item.getId());
-        sql = sb.toString();
-        JdbcUtil.update(sql);
+        update(item, item.getTable(), item.getId());
     }
 
     public void deleteItem(Item item) {
-        if (item == null) {
-            return;
-        }
-
-        StringBuffer sb = new StringBuffer();
-        sb.append("delete from item where");
-        String sql = MapperUtil.commonCondition(sb, item, SqlCondition.OR);
-        if (sql == null) {
-            return;
-        }
-
-        JdbcUtil.update(sql);
+        delete(item, item.getTable());
     }
 
     public void addItem(Item item) {
-        if (item == null) {
-            return;
-        }
-
-        StringBuffer sb = new StringBuffer();
-        sb.append("insert into item(");
-        String sql = MapperUtil.setInsertValueContion(sb, item);
-        if (sql == null) {
-            return;
-        }
-        JdbcUtil.update(sql);
+        add(item, item.getTable());
     }
 }

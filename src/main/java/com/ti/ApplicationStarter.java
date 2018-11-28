@@ -8,6 +8,15 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class ApplicationStarter {
+    static {
+        try {
+            Class.forName("com.ti.BeanFactory");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            System.out.println("加载BeanFactory失败");
+        }
+    }
+
     private static void printMenu() {
         System.out.println(" -------数据模拟操作------");
         System.out.println("|1.查询所有数据            |");
@@ -40,18 +49,22 @@ public class ApplicationStarter {
             switch (selection) {
                 case 1: {
                     ArrayList<Item> allItem = itemDao.findAllItem();
-                    allItem.forEach(o -> {
-                        System.out.println(o);
-                    });
+                    if (allItem != null) {
+                        allItem.forEach(o -> {
+                            System.out.println(o);
+                        });
+                    }
                     break;
                 }
                 case 2: {
                     Item item = new Item();
                     setItemValue(in, item);
-                    ArrayList<Item> items = itemDao.findIem(item);
-                    items.forEach(o->{
-                        System.out.println(o);
-                    });
+                    ArrayList<Item> items = itemDao.findItem(item);
+                    if (item != null) {
+                        items.forEach(o -> {
+                            System.out.println(o);
+                        });
+                    }
                     break;
                 }
                 case 3: {
