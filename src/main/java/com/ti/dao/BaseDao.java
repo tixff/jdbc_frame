@@ -3,7 +3,7 @@ package com.ti.dao;
 import java.util.ArrayList;
 
 public interface BaseDao<T> {
-    ArrayList<T> finaAll(T t, String table);
+    ArrayList<T> findAll(T t, String table);
 
     ArrayList<T> find(T t, String table);
 

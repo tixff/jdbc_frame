@@ -1,34 +1,30 @@
 package com.ti;
 
-import com.ti.dao.ItemDao;
-import com.ti.dao.impl.ItemDaoImpl;
-import com.ti.entities.Item;
+import com.ti.annotation.MapperScanner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Scanner;
 
 public class ApplicationStarter {
-    static {
+
+    private static final Logger logger = LoggerFactory.getLogger(ApplicationStarter.class);
+
+    public static void init(Class c) {
         try {
-            Class.forName("com.ti.BeanFactory");
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            System.out.println("加载BeanFactory失败");
+            MapperScanner annotation = (MapperScanner) c.getDeclaredAnnotation(MapperScanner.class);
+            if (annotation != null) {
+                String path = annotation.path();
+                BeanFactory.loadMapper(path);
+            }
+            BeanFactory.addBeans();
+        } catch (Exception e) {
+            logger.error("初始化容器失败", e);
         }
     }
 
-    private static void printMenu() {
-        System.out.println(" -------数据模拟操作------");
-        System.out.println("|1.查询所有数据            |");
-        System.out.println("|2.根据条件查询数据        |");
-        System.out.println("|3.根据条件添加数据        |");
-        System.out.println("|4.根据条件跟新数据        |");
-        System.out.println("|5.根据条件删除数据        |");
-        System.out.println("|6.退出模拟操作            |");
-        System.out.println(" ------------------------");
-    }
-
-    public static void main(String[] args) {
+    /*
+    private static void start() {
+        init();
         ItemDao itemDao = (ItemDao) BeanFactory.get("ItemDaoImpl");
         Scanner in = new Scanner(System.in);
         out:
@@ -90,9 +86,20 @@ public class ApplicationStarter {
                 }
             }
         }
-    }
+    }*/
 
-    private static void setItemValue(Scanner in, Item item) {
+    /*private static void printMenu() {
+        System.out.println(" -------数据模拟操作------");
+        System.out.println("|1.查询所有数据            |");
+        System.out.println("|2.根据条件查询数据        |");
+        System.out.println("|3.根据条件添加数据        |");
+        System.out.println("|4.根据条件跟新数据        |");
+        System.out.println("|5.根据条件删除数据        |");
+        System.out.println("|6.退出模拟操作            |");
+        System.out.println(" ------------------------");
+    }*/
+
+   /* private static void setItemValue(Scanner in, Item item) {
         System.out.println("请输入id");
         String id = in.nextLine();
 
@@ -125,6 +132,6 @@ public class ApplicationStarter {
         } catch (Exception e) {
 
         }
-    }
+    }*/
 
 }

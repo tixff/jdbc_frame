@@ -1,6 +1,7 @@
 package com.ti.utils;
 
 public class StringUtil {
+
     /**
      * 字符串首字母大写
      *

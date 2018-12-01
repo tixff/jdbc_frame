@@ -1,14 +1,16 @@
 package com.ti.utils;
 
 import com.ti.BeanFactory;
-import com.ti.entities.Item;
 import com.ti.enums.SqlCondition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Properties;
 
 public class MapperUtil {
+    private static final Logger logger = LoggerFactory.getLogger(MapperUtil.class);
 
     /**
      * 组装插入语句
@@ -36,7 +38,7 @@ public class MapperUtil {
                             sb.append(column + ",");
                         }
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        logger.error("设置列属性失败", e);
                     }
                 }
             }
@@ -79,7 +81,7 @@ public class MapperUtil {
                     sb.append(value + " , ");
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error("sql语句注入bean属性值失败");
             }
         }
         sb.replace(sb.lastIndexOf(","), sb.length(), "");
@@ -88,7 +90,7 @@ public class MapperUtil {
     }
 
     /**
-     * 组装add or查询条件
+     * 组装add or ,查询条件
      *
      * @param sb
      * @param obj
@@ -146,7 +148,7 @@ public class MapperUtil {
                     sb.append(" " + name + "=" + value + flag);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error("添加sql条件失败", e);
             }
         }
         if (sb.toString().equals(oldSql)) {
@@ -157,6 +159,12 @@ public class MapperUtil {
         return sb.toString();
     }
 
+    /**
+     * 初始化表名
+     *
+     * @param c
+     * @return
+     */
     public static String initTable(Class c) {
         HashMap<String, Properties> props = BeanFactory.getProps();
         String name = c.getName();

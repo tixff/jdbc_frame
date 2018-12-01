@@ -10,7 +10,7 @@ import java.util.ArrayList;
 public class BaseDaoImpl<T> implements BaseDao<T> {
 
     @Override
-    public ArrayList<T> finaAll(T t, String table) {
+    public ArrayList<T> findAll(T t, String table) {
         String sql = "select *from " + table;
         ArrayList list = JdbcUtil.select(sql, t.getClass());
         return list;

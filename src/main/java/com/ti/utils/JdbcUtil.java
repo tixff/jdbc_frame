@@ -3,7 +3,8 @@ package com.ti.utils;
 
 import com.ti.ApplicationStarter;
 import com.ti.BeanFactory;
-import com.ti.entities.Item;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,6 +14,8 @@ import java.util.HashMap;
 import java.util.Properties;
 
 public class JdbcUtil {
+
+    private static final Logger logger = LoggerFactory.getLogger(JdbcUtil.class);
 
     private static String userName;
     private static String password;
@@ -30,7 +33,7 @@ public class JdbcUtil {
             url = properties.getProperty("jdbc.mysql.url");
             driver = properties.getProperty("jdbc.mysql.driver");
         } catch (Exception e) {
-            System.out.println("加载资源失败");
+            logger.error("加载数据库配置资源失败", e);
         }
     }
 
@@ -42,10 +45,15 @@ public class JdbcUtil {
     public static Connection getConnection() {
         try {
             Class.forName(driver);
+            Connection connection = DriverManager.getConnection(url, userName, password);
 
-            return DriverManager.getConnection(url, userName, password);
+            if (connection == null) {
+                logger.error("获取数据库连接失败");
+                throw new Exception("");
+            }
+            return connection;
         } catch (Exception e) {
-            System.out.println("获取数据库连接失败");
+            logger.error("获取数据库连接失败", e);
         }
         return null;
     }
@@ -63,17 +71,10 @@ public class JdbcUtil {
             statement = conn.createStatement();
             statement.executeUpdate(sql);
         } catch (Exception e) {
-            System.out.println("执行更新sql语句失败");
+            logger.error("执行更新sql语句失败", e);
         } finally {
             closeConnection(conn, statement);
         }
-    }
-
-    public static void main(String[] args) {
-        ArrayList list = select("select * from item", Item.class);
-        list.forEach(o -> {
-            System.out.println(o);
-        });
     }
 
     /**
@@ -91,7 +92,7 @@ public class JdbcUtil {
                 conn.close();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("关闭数据库连接失败", e);
         }
     }
 
@@ -119,7 +120,7 @@ public class JdbcUtil {
                 return null;
             }
             while (resultSet.next()) {
-                Item item = new Item();
+                Object item = resultType.newInstance();
                 for (Object column : mapper.keySet()) {
                     String field = (String) mapper.get(column);
                     if ("table".equals(column)) {
@@ -144,8 +145,7 @@ public class JdbcUtil {
             }
             return list;
         } catch (Exception e) {
-            System.out.println("执行查询sql语句失败");
-            e.printStackTrace();
+            logger.error("执行查询sql语句失败", e);
         } finally {
             closeConnection(conn, statement);
         }
@@ -175,7 +175,7 @@ public class JdbcUtil {
                 map.put((String) key, field);
             }
         } catch (IOException e) {
-            System.out.println("加载mapper文件失败");
+            logger.error("加载mapper文件失败", e);
         }
         return map;
     }

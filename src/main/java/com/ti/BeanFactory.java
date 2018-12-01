@@ -1,6 +1,8 @@
 package com.ti;
 
 import com.ti.annotation.BeanScan;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,22 +14,27 @@ import java.util.Properties;
 import java.util.regex.Pattern;
 
 public class BeanFactory {
+    private static Logger logger = LoggerFactory.getLogger(BeanFactory.class);
     private static HashMap<String, Object> beans = new HashMap<>();
     private static HashMap<String, Properties> props = new HashMap<>();
     private static Pattern pattern = Pattern.compile("^.+Mapper.properties");
 
-    public static Object get(String className){
+
+    public static Object get(String className) {
         return beans.get(className);
-    }
-    static {
-        loadMapper();
-        addBeans();
     }
 
     public static HashMap<String, Properties> getProps() {
         return props;
     }
 
+    /**
+     * 注入工程所有被扫描的类
+     *
+     * @param classNames
+     * @param path
+     * @param packageName
+     */
     public static void setAllClassName(ArrayList<String> classNames, String path, String packageName) {
         File file = new File(path);
         if (file.isDirectory()) {
@@ -58,7 +65,9 @@ public class BeanFactory {
         }
     }
 
-    //初始化容器
+    /**
+     * 扫描注解添加bean到容器
+     */
     public static void addBeans() {
         URL url = BeanFactory.class.getClassLoader().getResource("");
         String path = url.getPath();
@@ -81,37 +90,40 @@ public class BeanFactory {
                 Object o = null;
                 try {
                     o = aClass.newInstance();
-                } catch (InstantiationException e) {
-                    e.printStackTrace();
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
+                } catch (Exception e) {
+                    logger.error("初始化bean失败", e);
                 }
                 beans.put(key, o);
             }
         }
     }
 
-    //加载mapper
-
-    public static void loadMapper() {
-        URL url = BeanFactory.class.getClassLoader().getResource("");
+    /**
+     * 加载mapper文件
+     */
+    public static void loadMapper(String path) {
+        URL url = BeanFactory.class.getClassLoader().getResource(path);
         if (url != null) {
             String protocol = url.getProtocol();
             if ("file".equals(protocol)) {
-                String path = url.getPath();
-                File file = new File(path);
+                String p = url.getPath();
+                File file = new File(p);
                 File[] files = file.listFiles();
                 for (int i = 0; i < files.length; i++) {
                     File f = files[i];
                     String fileName = f.getName();
                     if (pattern.matcher(fileName).find()) {
                         String key = fileName.substring(0, fileName.indexOf("."));
+                        if (path != "") {
+                            fileName = path + "/" + fileName;
+                        }
                         InputStream resourceAsStream = BeanFactory.class.getClassLoader().getResourceAsStream(fileName);
                         Properties prop = new Properties();
                         try {
                             prop.load(resourceAsStream);
                         } catch (IOException e) {
-                            e.printStackTrace();
+                            logger.error("加载mapper文件失败",e);
+
                         }
                         props.put(key, prop);
                     }
